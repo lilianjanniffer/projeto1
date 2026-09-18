@@ -10,7 +10,7 @@ class PlantoSaude:
         self.objetivo = objetivo
         self.fator_atividade = fator_atividade
 
-    def calcular_tmb(1) -> float:
+    def calcular_tmb(self) -> float:
         if self.sexo == "Masculino":
             return (10 * self.peso) + (6.25 * self.altura_cm) - (5 * self.idade) + 5
         else:
