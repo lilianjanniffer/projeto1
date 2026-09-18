@@ -131,3 +131,24 @@ if st.button("🚀 Gerar Plano Personalizado", type="primary", use_container_wid
     st.write(f"**Divisão Recomendada:** {treino['estrutura']}")
     st.write(f"**Frequência:** {treino['frequencia']}")
     st.write(f"**Exercício Aeróbico:** {treino['cardio']}")
+from google import genai
+import streamlit as st
+
+# Conecta ao Gemini usando a chave salva nas Secrets do Streamlit
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+
+def gerar_cardapio_ia(peso, objetivo, calorias, proteinas, carbos, gorduras):
+    prompt = f"""
+    Atue como um nutricionista esportivo profissional.
+    Crie um cardápio diário prático (café da manhã, almoço, lanche, jantar) adaptado para:
+    - Peso: {peso} kg | Objetivo: {objetivo}
+    - Metas: {calorias} kcal ({proteinas}g proteína, {carbos}g carboidrato, {gorduras}g gordura).
+    
+    Apresente ingredientes acessíveis no Brasil e especifique quantidades em gramas ou medidas caseiras.
+    """
+    
+    response = client.models.generate_content(
+        model="gemini-2.5-flash",
+        contents=prompt
+    )
+    return response.text
