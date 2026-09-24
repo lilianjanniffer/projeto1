@@ -17,9 +17,11 @@ def gerar_cardapio_ia(peso, objetivo, calorias, proteinas, carbos, gorduras):
     Apresente opções com alimentos acessíveis no Brasil e especifique as quantidades aproximadas (em gramas ou medidas caseiras).
     """
 
-    response = client.models.generate_content(
-        model="gemini-2.5-flash", contents=prompt
-    )
+  # Substitua o nome do modelo:
+response = client.models.generate_content(
+    model="gemini-2.0-flash",  # Modelo válido
+    contents=prompt
+)
     return response.text
 
 
