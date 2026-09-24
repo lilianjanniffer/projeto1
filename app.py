@@ -224,3 +224,44 @@ if st.button(
         if cardapio:
             st.subheader("🥗 Sugestão de Cardápio (Gerado por IA)")
             st.write(cardapio)
+import time
+
+def gerar_cardapio_ia(peso, objetivo, calorias, proteinas, carbos, gorduras):
+    if not client:
+        st.error("❌ Chave GEMINI_API_KEY não encontrada nos Secrets do Streamlit.")
+        return None
+
+    prompt = f"""
+    Atue como um nutricionista esportivo profissional.
+    Crie um cardápio diário prático (café da manhã, almoço, lanche, jantar) adaptado para:
+    - Peso: {peso} kg | Objetivo: {objetivo}
+    - Metas Calóricas Diárias: {calorias} kcal
+    - Macronutrientes: {proteinas}g de proteína, {carbos}g de carboidrato, {gorduras}g de gordura.
+    
+    Apresente opções com alimentos acessíveis no Brasil e especifique as quantidades aproximadas (em gramas ou medidas caseiras).
+    """
+
+    # Lista de modelos para tentar em ordem de preferência
+    modelos_disponiveis = ["gemini-2.5-flash", "gemini-1.5-flash"]
+
+    for modelo in modelos_disponiveis:
+        try:
+            response = client.models.generate_content(
+                model=modelo,
+                contents=prompt
+            )
+            return response.text
+        except APIError as e:
+            # Se o servidor estiver sobrecarregado (503), aguarda 1 segundo e tenta o próximo modelo
+            if e.code == 503:
+                time.sleep(1)
+                continue
+            else:
+                st.error(f"❌ Erro na API do Gemini (Código {e.code}): {e.message}")
+                return None
+        except Exception as e:
+            st.error(f"❌ Erro inesperado ao gerar o cardápio: {e}")
+            return None
+
+    st.warning("⚠️ Os servidores da Google estão muito congestionados no momento. Por favor, aguarde alguns segundos e clique no botão novamente.")
+    return None
