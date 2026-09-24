@@ -207,3 +207,9 @@ if st.button(
         )
         st.subheader("🥗 Sugestão de Cardápio (Gerado por IA)")
         st.write(cardapio)
+
+import streamlit as st
+from google import genai
+
+# Inicialize o cliente passando a chave armazenada nos Secrets
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
