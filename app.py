@@ -213,3 +213,30 @@ from google import genai
 
 # Inicialize o cliente passando a chave armazenada nos Secrets
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+import streamlit as st
+from google import genai
+from google.genai.errors import APIError
+
+# Garanta que a API Key seja passada explicitamente
+client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+
+def gerar_cardapio_ia(peso, ...):  # Mantenha os seus parâmetros originais
+    # 1. Validação do Prompt
+    if not prompt or not isinstance(prompt, str):
+        st.error(f"Erro no Prompt: O prompt gerado não é um texto válido. Conteúdo: {repr(prompt)}")
+        return None
+
+    # 2. Chamada com captura detalhada de erro
+    try:
+        response = client.models.generate_content(
+            model="gemini-1.5-flash",  # Teste também com gemini-1.5-flash
+            contents=prompt
+        )
+        return response.text
+    except APIError as e:
+        st.error(f"❌ Erro na API do Gemini (Código {e.code}): {e.message}")
+        st.json(e.response_json)  # Mostra o detalhe completo da resposta do Google
+        return None
+    except Exception as e:
+        st.error(f"❌ Erro inesperado: {type(e).__name__} - {e}")
+        return None
