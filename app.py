@@ -220,7 +220,7 @@ from google.genai.errors import APIError
 # Garanta que a API Key seja passada explicitamente
 client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
 
- def gerar_cardapio_ia(peso, ...):  # Mantenha os seus parâmetros originais
+    def gerar_cardapio_ia(peso, ...):  # Mantenha os seus parâmetros originais
     # 1. Validação do Prompt
     if not prompt or not isinstance(prompt, str):
         st.error(f"Erro no Prompt: O prompt gerado não é um texto válido. Conteúdo: {repr(prompt)}")
