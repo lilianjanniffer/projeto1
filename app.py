@@ -1,12 +1,26 @@
-from google import genai
 import streamlit as st
+from google import genai
+from google.genai.errors import APIError
+
+# --- Configuração do Layout do Streamlit ---
+st.set_page_config(
+    page_title="Gerador de Treino & Nutrição com IA",
+    page_icon="🏋️‍♂️",
+    layout="centered",
+)
 
 # --- Configuração do Cliente Gemini ---
-# Busca a chave salva em Settings > Secrets no Streamlit Cloud
-client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+try:
+    client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+except Exception as e:
+    client = None
 
 
 def gerar_cardapio_ia(peso, objetivo, calorias, proteinas, carbos, gorduras):
+    if not client:
+        st.error("❌ Chave GEMINI_API_KEY não encontrada nos Secrets do Streamlit.")
+        return None
+
     prompt = f"""
     Atue como um nutricionista esportivo profissional.
     Crie um cardápio diário prático (café da manhã, almoço, lanche, jantar) adaptado para:
@@ -17,11 +31,19 @@ def gerar_cardapio_ia(peso, objetivo, calorias, proteinas, carbos, gorduras):
     Apresente opções com alimentos acessíveis no Brasil e especifique as quantidades aproximadas (em gramas ou medidas caseiras).
     """
 
-  # Substitua o nome do modelo:
-    response = client.models.generate_content(
-    model="gemini-2.0-flash",  # Modelo válido
-    contents=prompt)
-    return response.text
+    try:
+        response = client.models.generate_content(
+            model="gemini-2.0-flash",
+            contents=prompt
+        )
+        return response.text
+    except APIError as e:
+        st.error(f"❌ Erro na API do Gemini (Código {e.code}): {e.message}")
+        return None
+    except Exception as e:
+        st.error(f"❌ Erro inesperado ao gerar o cardápio: {e}")
+        return None
+
 
 # --- Lógica de Cálculos do Plano ---
 class PlantoSaude:
@@ -106,13 +128,7 @@ class PlantoSaude:
             }
 
 
-# --- Configuração do Layout do Streamlit ---
-st.set_page_config(
-    page_title="Gerador de Treino & Nutrição com IA",
-    page_icon="🏋️‍♂️",
-    layout="centered",
-)
-
+# --- Interface Principal ---
 st.title("🏋️‍♂️ Gerador de Plano com IA")
 st.write("Insira os dados para calcular as metas e gerar o cardápio com IA.")
 
@@ -195,7 +211,7 @@ if st.button(
 
     st.divider()
 
-    # Chamada da Inteligência Artificial
+    # Chamada da IA
     with st.spinner("🤖 O Gemini está gerando seu cardápio personalizado..."):
         cardapio = gerar_cardapio_ia(
             peso,
@@ -205,38 +221,6 @@ if st.button(
             nutricao["carboidratos_g"],
             nutricao["gorduras_g"],
         )
-        st.subheader("🥗 Sugestão de Cardápio (Gerado por IA)")
-        st.write(cardapio)
-
-import streamlit as st
-from google import genai
-
-# Inicialize o cliente passando a chave armazenada nos Secrets
-client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-import streamlit as st
-from google import genai
-from google.genai.errors import APIError
-
-# Garanta que a API Key seja passada explicitamente
-client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
-
- def gerar_cardapio_ia(peso,...):  # Mantenha os seus parâmetros originais
-    # 1. Validação do Prompt
-    if not prompt or not isinstance(prompt, str):
-        st.error(f"Erro no Prompt: O prompt gerado não é um texto válido. Conteúdo: {repr(prompt)}")
-        return None
-
-    # 2. Chamada com captura detalhada de erro
-    try:
-        response = client.models.generate_content(
-            model="gemini-1.5-flash",  # Teste também com gemini-1.5-flash
-            contents=prompt
-        )
-        return response.text
-    except APIError as e:
-        st.error(f"❌ Erro na API do Gemini (Código {e.code}): {e.message}")
-        st.json(e.response_json)  # Mostra o detalhe completo da resposta do Google
-        return None
-    except Exception as e:
-        st.error(f"❌ Erro inesperado: {type(e).__name__} - {e}")
-        return None
+        if cardapio:
+            st.subheader("🥗 Sugestão de Cardápio (Gerado por IA)")
+            st.write(cardapio)
