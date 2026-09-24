@@ -22,7 +22,7 @@ response = client.models.generate_content(
     model="gemini-2.0-flash",  # Modelo válido
     contents=prompt
 )
-    return response.text
+return response.text
 
 # --- Lógica de Cálculos do Plano ---
 class PlantoSaude:
