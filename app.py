@@ -18,10 +18,9 @@ def gerar_cardapio_ia(peso, objetivo, calorias, proteinas, carbos, gorduras):
     """
 
   # Substitua o nome do modelo:
-response = client.models.generate_content(
+    response = client.models.generate_content(
     model="gemini-2.0-flash",  # Modelo válido
-    contents=prompt
-)
+    contents=prompt)
 return response.text
 
 # --- Lógica de Cálculos do Plano ---
