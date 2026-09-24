@@ -33,7 +33,7 @@ def gerar_cardapio_ia(peso, objetivo, calorias, proteinas, carbos, gorduras):
 
     try:
         response = client.models.generate_content(
-            model="gemini-2.0-flash",
+            model="gemini-3.6-flash",
             contents=prompt
         )
         return response.text
