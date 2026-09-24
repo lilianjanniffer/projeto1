@@ -24,7 +24,6 @@ response = client.models.generate_content(
 )
     return response.text
 
-
 # --- Lógica de Cálculos do Plano ---
 class PlantoSaude:
 
